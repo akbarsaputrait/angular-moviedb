@@ -1,0 +1,28 @@
+<div class="flex justify-center items-center w-full">
+  <hlm-carousel class="w-full max-w-md" [options]="carouselOptions" [plugins]="carouselPlugins">
+    <hlm-carousel-content>
+    @for (item of items; track item) {
+      <hlm-carousel-item>
+        <div class="p-1">
+          <section hlmCard>
+            <p hlmCardContent class="flex aspect-square items-center justify-center p-6">
+              <span class="text-4xl font-semibold">{{ item }}</span>
+            </p>
+          </section>
+        </div>
+      </hlm-carousel-item>
+    }
+    </hlm-carousel-content>
+    <button hlm-carousel-previous></button>
+    <button hlm-carousel-next></button>
+  </hlm-carousel>
+</div>
+
+<section hlmCard>
+  <div hlmCardHeader>
+    <h3 hlmCardTitle>Card Title</h3>
+    <p hlmCardDescription>Card Description</p>
+  </div>
+  <p hlmCardContent>Card Content</p>
+  <p hlmCardFooter>Card Footer</p>
+</section>
