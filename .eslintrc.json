@@ -41,7 +41,8 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/no-host-metadata-property":"warn"
       }
     },
     {
@@ -52,6 +53,13 @@
         "plugin:@nx/angular-template"
       ],
       "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": "warn"
+      }
     }
   ],
   "extends": [

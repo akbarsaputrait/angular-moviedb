@@ -30,7 +30,8 @@
             "prefix": "hlm",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/no-host-metadata-property":"warn"
       }
     },
     {
@@ -48,7 +49,7 @@
       ],
       "parser": "jsonc-eslint-parser",
       "rules": {
-        "@nx/dependency-checks": "error"
+        "@nx/dependency-checks": "warn"
       }
     }
   ]

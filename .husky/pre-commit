@@ -1,0 +1,29 @@
+if [[ "$OSTYPE" =~ ^msys ]]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  . "$(dirname "$0")/_/husky.sh"
+else
+  export NVM_DIR="$HOME/.nvm/nvm.sh"
+  . "$(dirname $NVM_DIR)/nvm.sh"
+
+  export NVM_DIR="$HOME/.nvm"
+  a=$(nvm ls | grep 'node')
+  b=${a#*(-> }
+  v=${b%%[)| ]*}
+
+  export PATH="$NVM_DIR/versions/node/$v/bin:$PATH"
+fi
+
+echo '🏗️👷 Styling, testing and building your project before committing'
+
+#fix & format
+npx lint-staged
+
+# Check ESLint Standards
+npm run lint && (
+  echo '🎉🎉🎉🎉 Yeayy, there is no error in your code... I am committing this now. ✨🚀🏄‍♂️🍻'
+) || (
+  echo '🙈👷🔨❌ Yoo, your code looks disgusting. Check linter 🙈👷🔨❌
+  Run npm run lint, add changes and try commit again.'
+  false
+)
