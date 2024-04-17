@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
-import { MoviesComponent } from './movies/movies.component';
-import { NxWelcomeComponent } from './nx-welcome.component';
+import { MovieComponent } from './pages/movie/movie.component';
+import { TvShowComponent } from './pages/tv-show/tv-show.component';
 
 export const appRoutes: Route[] = [
-  { path: '', component: MoviesComponent },
-  { path: 'tv-shows', component: NxWelcomeComponent },
+  { path: '', component: MovieComponent },
+  { path: 'tv-shows', component: TvShowComponent },
 ];

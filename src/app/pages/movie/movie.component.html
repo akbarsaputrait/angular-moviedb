@@ -1,0 +1,217 @@
+<div class="flex flex-col gap-12 justify-center items-center w-full container pb-6">
+  <hlm-carousel class="w-full" [options]="carouselOptions" [plugins]="carouselPlugins">
+    <hlm-carousel-content>
+    @for (movie of discovers; track $index) {
+      <hlm-carousel-item class="h-full lg:max-h-[600px] flex">
+        <section>
+          <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:h-full lg:grid-cols-2">
+              <div class="relative z-10 lg:py-16">
+                <div class="relative aspect-video">
+                  <img
+                    alt=""
+                    [src]="'https://image.tmdb.org/t/p/w500' + movie.backdrop_path"
+                    class="absolute inset-0 h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+              </div>
+        
+              <div class="relative flex items-center bg-card rounded-r-lg">
+                <span
+                  class="hidden lg:absolute lg:inset-y-0 lg:-start-16 lg:block lg:w-16 bg-card rounded-l-lg"
+                ></span>
+        
+                <div class="p-8 sm:p-16 lg:p-24">
+                  <div class="text-xs text-zinc-500 dark:text-zinc-300">{{movie.release_date | date: 'mediumDate'}}</div>
+                  <h2 hlmH2 class="text-wrap">{{ movie.title }}</h2>
+        
+                  <p hmlP>
+                    {{ movie.overview| slice: 0:250 }}{{ movie.overview.length > 250 ? '...' : '' }}
+                  </p>
+
+                  @if (movie.genres.length > 0) {
+                    <div class="flex flex-row gap-2 flex-wrap mt-3">
+                      @for (genre of movie.genres; track $index) {
+                        <div hlmBadge variant="secondary">{{genre.name}}</div>
+                      }
+                    </div>
+                  }
+        
+                  <div class="mt-4 flex items-center gap-8 text-xs">
+                    <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+                      <hlm-icon name="lucideStar" size="sm" class="text-yellow-500"></hlm-icon>
+              
+                      <div class="mt-1.5 sm:mt-0">
+                        <p class="text-zinc-500 dark:text-zinc-300">Vote</p>
+              
+                        <p class="font-medium">{{movie.vote_average | number: '1.0-1'}}</p>
+                      </div>
+                    </div>
+              
+                    <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+                      <button hlmBtn size="sm" variant="outline">
+                        <hlm-icon name="lucideBookmarkPlus" class="mr-2" size="sm"></hlm-icon>
+                        Add to Favorite
+                      </button>
+                    </div>
+                  </div>
+
+                  <a [routerLink]="[ '/path' ]" hlmBtn size="lg" class="mt-8">Get in Touch</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </hlm-carousel-item>
+    }
+    </hlm-carousel-content>
+    <button hlm-carousel-previous class="hidden lg:block"></button>
+    <button hlm-carousel-next class="hidden lg:block"></button>
+  </hlm-carousel>
+
+  <section class="flex flex-col gap-6 w-full">
+    <h3 hlmH3>Now Playing</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+      @if (loading.nowPlayings) {
+        @for (item of [1,2,3,4]; track $index) {
+          <div class='w-full flex flex-col gap-4 justify-start items-start'>
+            <hlm-skeleton class='h-[400px] w-full' />
+            <div class='space-y-2'>
+              <hlm-skeleton class='h-4 w-[250px]' />
+              <hlm-skeleton class='h-4 w-[200px]' />
+            </div>
+          </div>
+        }
+      } @else {
+        @for (movie of nowPlayings; track $index) {
+          <div hlmCard class="flex flex-col">
+            <div hlmCardHeader>
+              <img
+              alt=""
+              [src]="'https://image.tmdb.org/t/p/w300' + movie.poster_path"
+              class="w-full max-w-[300px] rounded-md object-cover"
+            />
+            </div>
+
+            <div hlmCardContent>
+              <dl>
+                <div>
+                  <dt class="sr-only">Release Date</dt>
+          
+                  <dd class="text-xs text-zinc-500 dark:text-zinc-300">{{movie.release_date | date: 'mediumDate'}}</dd>
+                </div>
+          
+                <div>
+                  <dt class="sr-only">Title</dt>
+          
+                  <dd class="font-semibold text-lg text-wrap">{{ movie.title }}</dd>
+                </div>
+              </dl>
+
+              @if (movie.genres.length > 0) {
+                <div class="flex flex-row gap-2 flex-wrap mt-3">
+                  @for (genre of movie.genres; track $index) {
+                    <div hlmBadge variant="secondary">{{genre.name}}</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div hlmCardFooter class="mt-auto flex justify-between items-center gap-8 text-xs">
+              <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+                <hlm-icon name="lucideStar" size="sm" class="text-yellow-500"></hlm-icon>
+        
+                <div class="mt-1.5 sm:mt-0">
+                  <p class="text-zinc-500 dark:text-zinc-300">Vote</p>
+        
+                  <p class="font-medium">{{movie.vote_average | number: '1.0-1'}}</p>
+                </div>
+              </div>
+        
+              <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+                <button hlmBtn size="sm" variant="outline">
+                  <hlm-icon name="lucideBookmarkPlus" class="mr-2" size="sm"></hlm-icon>
+                  Add to Favorite
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-6 w-full">
+    <h3 hlmH3>Upcomings</h3>
+    <div class="grid grid-cols-4 gap-8">
+
+      @if (loading.nowPlayings) {
+        @for (item of [1,2,3,4]; track $index) {
+          <div class='w-full flex flex-col gap-4 justify-start items-start'>
+            <hlm-skeleton class='h-[400px] w-full' />
+            <div class='space-y-2'>
+              <hlm-skeleton class='h-4 w-[250px]' />
+              <hlm-skeleton class='h-4 w-[200px]' />
+            </div>
+          </div>
+        }
+      } @else {
+        @for (movie of upcomings; track $index) {
+          <div hlmCard class="flex flex-col">
+            <div hlmCardHeader>
+              <img
+              alt=""
+              [src]="'https://image.tmdb.org/t/p/w300' + movie.poster_path"
+              class="w-full max-w-[300px] rounded-md object-cover"
+            />
+            </div>
+
+            <div hlmCardContent>
+              <dl>
+                <div>
+                  <dt class="sr-only">Release Date</dt>
+          
+                  <dd class="text-xs text-zinc-500 dark:text-zinc-300">{{movie.release_date | date: 'mediumDate'}}</dd>
+                </div>
+          
+                <div>
+                  <dt class="sr-only">Title</dt>
+          
+                  <dd class="font-semibold text-lg text-wrap">{{ movie.title }}</dd>
+                </div>
+              </dl>
+
+              @if (movie.genres.length > 0) {
+                <div class="flex flex-row gap-2 flex-wrap mt-3">
+                  @for (genre of movie.genres; track $index) {
+                    <div hlmBadge variant="secondary">{{genre.name}}</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div hlmCardFooter class="mt-auto flex justify-between items-center gap-8 text-xs">
+              <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+                <hlm-icon name="lucideStar" size="sm" class="text-yellow-500"></hlm-icon>
+        
+                <div class="mt-1.5 sm:mt-0">
+                  <p class="text-zinc-500 dark:text-zinc-300">Vote</p>
+        
+                  <p class="font-medium">{{movie.vote_average | number: '1.0-1'}}</p>
+                </div>
+              </div>
+        
+              <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+                <button hlmBtn size="sm" variant="outline">
+                  <hlm-icon name="lucideBookmarkPlus" class="mr-2" size="sm"></hlm-icon>
+                  Add to Favorite
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </section>
+</div>

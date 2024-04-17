@@ -6,7 +6,7 @@ import { lucideBookmark, lucideMoon, lucideSun } from '@ng-icons/lucide';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { HlmIconComponent } from '@spartan-ng/ui-icon-helm';
 import { HlmH2Directive } from '@spartan-ng/ui-typography-helm';
-import { ThemeService } from './theme.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   standalone: true,

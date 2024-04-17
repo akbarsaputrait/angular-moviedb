@@ -59,3 +59,7 @@
     --ring: 20.5 90.2% 48.2%;
   }
 }
+
+body {
+  @apply bg-background dark:bg-zinc-900;
+}
