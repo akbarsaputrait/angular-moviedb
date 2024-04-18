@@ -2,7 +2,12 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { provideIcons } from '@ng-icons/core';
-import { lucideBookmarkPlus, lucideStar } from '@ng-icons/lucide';
+import {
+  lucideBookmarkPlus,
+  lucideBookMinus,
+  lucideStar,
+} from '@ng-icons/lucide';
+import { Store } from '@ngrx/store';
 import { HlmBadgeDirective } from '@spartan-ng/ui-badge-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import {
@@ -24,6 +29,9 @@ import {
 import { EmblaOptionsType, EmblaPluginType } from 'embla-carousel-angular';
 import Autoplay from 'embla-carousel-autoplay';
 import { delay } from 'rxjs';
+import * as FavoritesActions from '../../core/states/favorites/favorites.actions';
+import { FavoritesEntity } from '../../core/states/favorites/favorites.models';
+import { selectAllFavoriteIds } from '../../core/states/favorites/favorites.selectors';
 import { IGenre, IMovie, MovieService } from './movie.service';
 
 @Component({
@@ -57,21 +65,19 @@ import { IGenre, IMovie, MovieService } from './movie.service';
     // Pipes
     AsyncPipe,
   ],
-  providers: [provideIcons({ lucideStar, lucideBookmarkPlus })],
+  providers: [
+    provideIcons({ lucideStar, lucideBookmarkPlus, lucideBookMinus }),
+  ],
 })
 export class MovieComponent implements OnInit {
   private readonly service = inject(MovieService);
+  private readonly store = inject(Store);
 
-  genres$ = this.service.getGenres();
+  favoriteIds: number[] = [];
+
   genres: IGenre[] = [];
-
-  discovers$ = this.service.getDiscovers();
   discovers: IMovie[] = [];
-
-  nowPlayings$ = this.service.getNowPlayings();
   nowPlayings: IMovie[] = [];
-
-  upcomings$ = this.service.getUpcomings();
   upcomings: IMovie[] = [];
 
   loading = {
@@ -87,41 +93,87 @@ export class MovieComponent implements OnInit {
     Autoplay({ playOnInit: true, delay: 7000 }),
   ];
 
+  constructor() {
+    this.store.select(selectAllFavoriteIds).subscribe((val) => {
+      this.favoriteIds = val;
+    });
+  }
+
   ngOnInit(): void {
-    this.genres$.subscribe((data) => {
+    this.service.getGenres().subscribe((data) => {
       this.genres = data.genres;
     });
 
-    this.discovers$.subscribe((data) => {
-      this.discovers = data.results.slice(0, 4).map((val) => {
-        val.genres = this.genres.filter((genre) =>
-          val.genre_ids.includes(genre.id)
-        );
+    this.service
+      .getDiscovers()
+      .pipe(delay(1000))
+      .subscribe((data) => {
+        this.discovers = data.results.slice(0, 4).map((val) => {
+          val.genres = this.genres.filter((genre) =>
+            val.genre_ids.includes(genre.id)
+          );
+          val.favorited = this.favoriteIds.includes(val.id);
 
-        return val;
+          return val;
+        });
       });
+
+    this.service
+      .getNowPlayings()
+      .pipe(delay(1000))
+      .subscribe((data) => {
+        console.log(this.favoriteIds);
+        this.nowPlayings = data.results.slice(0, 4).map((val) => {
+          val.genres = this.genres.filter((genre) =>
+            val.genre_ids.includes(genre.id)
+          );
+
+          val.favorited = this.favoriteIds.includes(val.id);
+
+          return val;
+        });
+        this.loading.nowPlayings = false;
+      });
+
+    this.service
+      .getUpcomings()
+      .pipe(delay(1000))
+      .subscribe((data) => {
+        this.upcomings = data.results.slice(0, 4).map((val) => {
+          val.genres = this.genres.filter((genre) =>
+            val.genre_ids.includes(genre.id)
+          );
+          val.favorited = this.favoriteIds.includes(val.id);
+
+          return val;
+        });
+        this.loading.upcomings = false;
+      });
+  }
+
+  addToFavorite(movie: IMovie) {
+    const createFavoritesEntity = (movie: IMovie): FavoritesEntity => ({
+      id: movie.id,
+      type: 'movie',
+      created_at: new Date().getTime().toString(),
     });
 
-    this.nowPlayings$.pipe(delay(1000)).subscribe((data) => {
-      this.nowPlayings = data.results.slice(0, 4).map((val) => {
-        val.genres = this.genres.filter((genre) =>
-          val.genre_ids.includes(genre.id)
-        );
-
-        return val;
-      });
-      this.loading.nowPlayings = false;
+    const action = FavoritesActions.addFavorite({
+      favorite: createFavoritesEntity(movie),
     });
 
-    this.upcomings$.pipe(delay(1000)).subscribe((data) => {
-      this.upcomings = data.results.slice(0, 4).map((val) => {
-        val.genres = this.genres.filter((genre) =>
-          val.genre_ids.includes(genre.id)
-        );
+    movie.favorited = true;
 
-        return val;
-      });
-      this.loading.upcomings = false;
+    this.store.dispatch(action);
+  }
+
+  removeFromFavorite(movie: IMovie) {
+    const action = FavoritesActions.removeFavorite({
+      id: movie.id,
     });
+
+    movie.favorited = false;
+
+    this.store.dispatch(action);
   }
 }

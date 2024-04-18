@@ -21,7 +21,7 @@
         // store the dark value in the localStorage
         if (document && document.documentElement) {
           document.documentElement.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
+          localStorage.setItem('aks_theme', 'dark');
         }
       } else {
         // else if we have access to the document and the element
@@ -29,7 +29,7 @@
         // store the value light in the localStorage
         if (document && document.documentElement) {
           document.documentElement.classList.remove('dark');
-          localStorage.setItem('theme', 'light');
+          localStorage.setItem('aks_theme', 'light');
         }
       }
     </script>

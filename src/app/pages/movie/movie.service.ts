@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService, IResponse } from '../../services/api.service';
+import { ApiService, IResponse } from '../../core/services/api.service';
 
 export interface IMovie {
   adult: boolean;
@@ -18,6 +18,7 @@ export interface IMovie {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  favorited: boolean;
 }
 
 export interface IGenre {
