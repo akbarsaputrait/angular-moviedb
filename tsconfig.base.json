@@ -14,35 +14,6 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {
-      "@spartan-ng/ui-badge-helm": [
-        "src/components/ui/ui-badge-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-button-helm": [
-        "src/components/ui/ui-button-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-card-helm": [
-        "src/components/ui/ui-card-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-carousel-helm": [
-        "src/components/ui/ui-carousel-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-dialog-helm": [
-        "src/components/ui/ui-dialog-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-icon-helm": [
-        "src/components/ui/ui-icon-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-input-helm": [
-        "src/components/ui/ui-input-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-skeleton-helm": [
-        "src/components/ui/ui-skeleton-helm/src/index.ts"
-      ],
-      "@spartan-ng/ui-typography-helm": [
-        "src/components/ui/ui-typography-helm/src/index.ts"
-      ]
-    }
   },
   "exclude": ["node_modules", "tmp"]
 }

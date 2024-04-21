@@ -1,0 +1,77 @@
+<div hlmCard class="flex flex-col h-full">
+  <div hlmCardHeader>
+    <img
+      alt=""
+      [src]="'https://image.tmdb.org/t/p/w300' + movie().poster_path"
+      class="w-full max-w-[300px] rounded-md object-cover"
+    />
+  </div>
+
+  <div hlmCardContent>
+    <p class="text-xs text-zinc-500 dark:text-zinc-300">
+      {{ movie().release_date | date : 'mediumDate' }}
+    </p>
+    <a [routerLink]="[movie().id]" class="font-semibold text-lg text-wrap hover:text-primary transition-colors duration-200">{{ movie().title }}</a>
+
+    @if (movie().genres.length > 0) {
+    <div class="flex flex-row gap-2 flex-wrap mt-3">
+      @for (genre of movie().genres; track $index) {
+      <div hlmBadge variant="secondary">{{ genre.name }}</div>
+      }
+    </div>
+    }
+  </div>
+
+  <div
+    hlmCardFooter
+    class="mt-auto flex justify-between items-center gap-8 text-xs"
+  >
+    <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+      <hlm-icon
+        name="lucideStar"
+        size="sm"
+        class="text-yellow-500"
+      ></hlm-icon>
+
+      <div class="mt-1.5 sm:mt-0">
+        <p class="text-zinc-500 dark:text-zinc-300">Vote</p>
+
+        <p class="font-medium">
+          {{ movie().vote_average | number : '1.0-1' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+      @if (!movie().favorited) {
+      <button
+        hlmBtn
+        size="sm"
+        variant="outline"
+        (click)="addToFavorite()"
+      >
+        <hlm-icon
+          name="lucideBookmarkPlus"
+          class="mr-2"
+          size="sm"
+        ></hlm-icon>
+        Add to Favorite
+      </button>
+      } @else {
+      <button
+        hlmBtn
+        size="sm"
+        variant="destructive"
+        (click)="removeFromFavorite()"
+      >
+        <hlm-icon
+          name="lucideBookMinus"
+          class="mr-2"
+          size="sm"
+        ></hlm-icon>
+        Remove
+      </button>
+      }
+    </div>
+  </div>
+</div>

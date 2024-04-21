@@ -19,11 +19,32 @@ export interface IMovie {
   vote_average: number;
   vote_count: number;
   favorited: boolean;
+  production_companies?: {
+    id: number;
+    logo_path: string;
+    name: string;
+    origin_country: string;
+  }[];
 }
 
 export interface IGenre {
   id: number;
   name: string;
+}
+
+export interface ICast {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  cast_id: number;
+  character: string;
+  credit_id: string;
+  order: number;
 }
 
 @Injectable({
@@ -62,5 +83,29 @@ export class MovieService extends ApiService {
         include_adult: false,
       },
     });
+  }
+
+  getMovie(id: string): Observable<IMovie> {
+    return this.http.get<IMovie>(`${this.baseUrl}/movie/${id}`, {
+      headers: this.headers,
+    });
+  }
+
+  getMovieCredits(id: string): Observable<{ id: number; cast: ICast[] }> {
+    return this.http.get<{ id: number; cast: ICast[] }>(
+      `${this.baseUrl}/movie/${id}/credits`,
+      {
+        headers: this.headers,
+      }
+    );
+  }
+
+  getSimilar(id: string): Observable<{ results: IMovie[] }> {
+    return this.http.get<IResponse<IMovie>>(
+      `${this.baseUrl}/movie/${id}/similar`,
+      {
+        headers: this.headers,
+      }
+    );
   }
 }

@@ -1,0 +1,35 @@
+<div
+  class="flex flex-col gap-12 w-full container pb-6"
+>
+  @if (loading.discovers) {
+    <div class="w-full flex gap-4 justify-start items-start">
+      <hlm-skeleton class="h-[400px] w-full" />
+    </div>
+  } @else {
+    <app-carousel-movie [movies]="discovers"></app-carousel-movie>
+  }
+
+  <section class="flex flex-col gap-6 w-full">
+    @if (!loading.upcomings) { <h3 hlmH3>Now Playings</h3> }
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+    >
+      @if (loading.nowPlayings) { @for (item of [1,2,3,4]; track $index) {
+      <app-card-movie-skeleton></app-card-movie-skeleton>
+      } } @else { @for (movie of nowPlayings; track $index) {
+      <app-card-movie [movie]="movie"></app-card-movie>
+      } }
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-6 w-full">
+    @if (!loading.upcomings) { <h3 hlmH3>Upcomings</h3> }
+    <div class="grid grid-cols-4 gap-8">
+      @if (loading.upcomings) { @for (item of [1,2,3,4]; track $index) {
+      <app-card-movie-skeleton></app-card-movie-skeleton>
+      } } @else { @for (movie of upcomings; track $index) {
+      <app-card-movie [movie]="movie"></app-card-movie>
+      } }
+    </div>
+  </section>
+</div>

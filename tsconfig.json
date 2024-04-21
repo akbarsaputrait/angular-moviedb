@@ -7,7 +7,41 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@cs/*": ["src/app/core/services/*"],
+      "@ct/*": ["src/app/core/states/*"],
+      "@lib/*": ["src/libs/*"],
+      "@pg/*": ["src/app/pages/*"],
+      "@sc/*": ["src/app/shared/components/*"],
+      "@spartan-ng/ui-badge-helm": [
+        "src/app/shared/components/ui/ui-badge-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-button-helm": [
+        "src/app/shared/components/ui/ui-button-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-card-helm": [
+        "src/app/shared/components/ui/ui-card-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-carousel-helm": [
+        "src/app/shared/components/ui/ui-carousel-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-dialog-helm": [
+        "src/app/shared/components/ui/ui-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-icon-helm": [
+        "src/app/shared/components/ui/ui-icon-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-input-helm": [
+        "src/app/shared/components/ui/ui-input-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-skeleton-helm": [
+        "src/app/shared/components/ui/ui-skeleton-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-typography-helm": [
+        "src/app/shared/components/ui/ui-typography-helm/src/index.ts"
+      ]
+    }
   },
   "files": [],
   "include": [],
