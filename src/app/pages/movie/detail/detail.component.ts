@@ -8,7 +8,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
 import { selectAllGenres } from '@ct/genres/genres.selectors';
@@ -55,6 +55,7 @@ export class MovieDetailComponent implements OnInit {
   private readonly service = inject(MovieService);
   private readonly store = inject(Store);
   private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
 
   movieId: WritableSignal<string> = signal<string>('');
 
@@ -99,6 +100,13 @@ export class MovieDetailComponent implements OnInit {
         .subscribe((movie) => {
           this.movie = movie;
           this.title.setTitle(`${this.movie.title} - Angular Moviedb`);
+
+          if (this.movie.poster_path) {
+            this.meta.updateTag({
+              name: 'og:image',
+              content: `https://image.tmdb.org/t/p/original${this.movie.poster_path}`,
+            });
+          }
 
           if (this.favoriteIds.includes(Number(movie.id))) {
             this.movie.favorited = true;

@@ -6,7 +6,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
 import { selectAllGenres } from '@ct/genres/genres.selectors';
 import { Store } from '@ngrx/store';
@@ -36,6 +36,9 @@ export class MovieIndexComponent implements OnInit {
   private readonly service = inject(MovieService);
   private readonly store = inject(Store);
   private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
+
+  siteTitle = 'Movies - Angular Moviedb';
 
   favoriteIds: WritableSignal<number[]> = signal([]);
 
@@ -64,7 +67,8 @@ export class MovieIndexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.title.setTitle('Movies - Angular Moviedb');
+    this.title.setTitle(this.siteTitle);
+    this.meta.updateTag({ name: 'title', content: this.siteTitle });
 
     this.service
       .getDiscovers()
