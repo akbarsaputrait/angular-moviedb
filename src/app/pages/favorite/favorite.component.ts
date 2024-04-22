@@ -1,5 +1,6 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { selectAllFavorites } from '@ct/favorites/favorites.selectors';
 import { Store } from '@ngrx/store';
 import { IMovie } from '@pg/movie/movie.service';
@@ -15,6 +16,11 @@ import { Observable } from 'rxjs';
 })
 export class FavoriteComponent {
   private readonly store = inject(Store);
+  private readonly title = inject(Title);
 
   favorites$: Observable<IMovie[]> = this.store.select(selectAllFavorites);
+
+  constructor() {
+    this.title.setTitle('Favorites - Angular Moviedb');
+  }
 }

@@ -6,6 +6,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
 import { selectAllGenres } from '@ct/genres/genres.selectors';
 import { Store } from '@ngrx/store';
@@ -34,6 +35,7 @@ import { IGenre, IMovie, MovieService } from '../movie.service';
 export class MovieIndexComponent implements OnInit {
   private readonly service = inject(MovieService);
   private readonly store = inject(Store);
+  private readonly title = inject(Title);
 
   favoriteIds: WritableSignal<number[]> = signal([]);
 
@@ -62,6 +64,8 @@ export class MovieIndexComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.title.setTitle('Movies - Angular Moviedb');
+
     this.service
       .getDiscovers()
       .pipe(delay(1000))

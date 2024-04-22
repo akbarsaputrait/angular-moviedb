@@ -29,6 +29,9 @@ This app build with modern tech stacks, such as:
 - [x] Light/Dark Theme
 - [x] Responsive UI
 - [x] Dockerfile (For deployment purpose)
+- [ ] Infinite Scroll
+- [ ] Search Movies
+- [ ] SEO
 
 ## Development
 
