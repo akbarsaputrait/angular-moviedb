@@ -8,8 +8,12 @@
   }
 
   <section class="flex flex-col gap-6 w-full">
-    @if (!loading.upcomings) {
-    <h3 hlmH3>Now Playings</h3>
+    @if (!loading.nowPlayings) {
+    <h3 hlmH3 class="font-semibold text-2xl">Now Playings</h3>
+    } @else {
+    <div class="w-full flex gap-4 justify-start items-start">
+      <hlm-skeleton class="h-[20px] w-[100px]" />
+    </div>
     }
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
@@ -24,9 +28,15 @@
 
   <section class="flex flex-col gap-6 w-full">
     @if (!loading.upcomings) {
-    <h3 hlmH3>Upcomings</h3>
+    <h3 hlmH3 class="font-semibold text-2xl">Upcomings</h3>
+    } @else {
+    <div class="w-full flex gap-4 justify-start items-start">
+      <hlm-skeleton class="h-[20px] w-[100px]" />
+    </div>
     }
-    <div class="grid grid-cols-4 gap-8">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+    >
       @if (loading.upcomings) { @for (item of [1,2,3,4]; track $index) {
       <app-card-movie-skeleton></app-card-movie-skeleton>
       } } @else { @for (movie of upcomings(); track $index) {

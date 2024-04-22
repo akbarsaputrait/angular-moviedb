@@ -63,7 +63,9 @@ export class MovieDetailComponent implements OnInit {
   }
 
   set movie(val: IMovie | null) {
-    if (val !== this.movie) {
+    if (val === null) {
+      this._movie = null;
+    } else if (val !== this.movie) {
       this._movie = Object.assign({}, val);
     }
   }
@@ -129,6 +131,8 @@ export class MovieDetailComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.movieId.set(params['movie_id']);
       this.movie = null;
+      this.similar = [];
+      this.casts = [];
     });
   }
 

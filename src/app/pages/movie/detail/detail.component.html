@@ -19,12 +19,12 @@
     </div>
 
     <div
-      class="flex flex-col md:flex-row md:items-center -mt-40 mx-20 z-20 gap-8"
+      class="flex flex-col md:flex-row md:items-center -mt-40 md:mx-10 lg:mx-20 z-20 gap-8"
     >
       <img
         [alt]="movie.title"
         [src]="'https://image.tmdb.org/t/p/original' + movie.poster_path"
-        class="w-full max-w-[300px] rounded-md object-cover shadow-xl"
+        class="w-full max-w-[300px] rounded-md object-cover shadow-xl mx-auto"
       />
 
       <div class="flex flex-col items-start gap-3">
@@ -106,7 +106,7 @@
             [alt]="company.name"
             [title]="company.name"
             [src]="'https://image.tmdb.org/t/p/w92' + company.logo_path"
-            class="w-[92px] h-full"
+            class="w-[92px] h-full mx-auto"
           />
           } }
         </div>
@@ -117,7 +117,7 @@
 
   @if (casts.length > 0) {
   <section class="flex flex-col gap-6 w-full">
-    <h3 hlmH3>Casts</h3>
+    <h3 hlmH3 class="font-semibold text-2xl">Casts</h3>
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
     >
@@ -131,11 +131,11 @@
                 ? 'https://image.tmdb.org/t/p/w300' + cast.profile_path
                 : '/assets/images/people-thumb.jpg'
             "
-            class="w-full max-w-[300px] h-[450px] rounded-md object-cover group-hover:shadow-xl"
+            class="w-full max-w-[300px] h-[450px] rounded-md object-cover group-hover:shadow-xl mx-auto"
           />
         </div>
 
-        <div hlmCardContent>
+        <div hlmCardContent class="text-center">
           <p class="text-xs text-zinc-500 dark:text-zinc-300 mt-3">
             {{ cast.character }}
           </p>
@@ -151,7 +151,7 @@
   </section>
   } @if (!loading.similar) {
   <section class="flex flex-col gap-6 w-full">
-    <h3 hlmH3>Similar Movies</h3>
+    <h3 hlmH3 class="font-semibold text-2xl">Similar Movies</h3>
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
       [class.!grid-cols-1]="similar.length === 0"
