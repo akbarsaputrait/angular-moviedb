@@ -16,5 +16,5 @@ module.exports = {
     }, 
   },
   darkMode: 'class',
-  plugins: [require('tailwindcss-debug-screens')],
+  plugins: [],
 };
