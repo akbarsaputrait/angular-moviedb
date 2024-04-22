@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
+import { FavoriteComponent } from '@pg/favorite/favorite.component';
 import { MovieDetailComponent } from '@pg/movie/detail/detail.component';
 import { MovieIndexComponent } from '@pg/movie/index/index.component';
 import { MovieComponent } from './pages/movie/movie.component';
-import { TvShowComponent } from './pages/tv-show/tv-show.component';
 
 export const appRoutes: Route[] = [
   {
@@ -24,5 +24,5 @@ export const appRoutes: Route[] = [
       },
     ],
   },
-  { path: 'tv-shows', component: TvShowComponent },
+  { path: 'favorites', component: FavoriteComponent },
 ];

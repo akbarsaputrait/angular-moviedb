@@ -1,15 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import * as FavoritesActions from '@ct/favorites/favorites.actions';
-import { FavoritesEntity } from '@ct/favorites/favorites.models';
 import {
+  lucideBookmarkMinus,
   lucideBookmarkPlus,
-  lucideBookMinus,
   lucideStar,
 } from '@ng-icons/lucide';
-import { Store } from '@ngrx/store';
-import { IMovie } from '@pg/movie/movie.service';
+import { IMovie, MovieService } from '@pg/movie/movie.service';
 import { HlmBadgeDirective } from '@spartan-ng/ui-badge-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import {
@@ -45,37 +42,31 @@ import { HlmIconComponent, provideIcons } from '@spartan-ng/ui-icon-helm';
     HlmCardTitleDirective,
   ],
   providers: [
-    provideIcons({ lucideStar, lucideBookmarkPlus, lucideBookMinus }),
+    provideIcons({ lucideStar, lucideBookmarkPlus, lucideBookmarkMinus }),
   ],
 })
 export class CardMovieComponent {
-  private readonly store = inject(Store);
+  private readonly service = inject(MovieService);
 
-  movie = input.required<IMovie>();
+  _movie: IMovie = {} as IMovie;
+  @Input()
+  get movie() {
+    return this._movie;
+  }
+
+  set movie(val: IMovie) {
+    if (val !== this.movie) {
+      this._movie = Object.assign({}, val);
+    }
+  }
 
   addToFavorite() {
-    const createFavoritesEntity = (movie: IMovie): FavoritesEntity => ({
-      id: movie.id,
-      type: 'movie',
-      created_at: new Date().getTime().toString(),
-    });
-
-    const action = FavoritesActions.addFavorite({
-      favorite: createFavoritesEntity(this.movie()),
-    });
-
-    this.movie().favorited = true;
-
-    this.store.dispatch(action);
+    this.service.addToFavorite(this.movie);
+    this.movie = Object.assign({}, { ...this.movie, favorited: true });
   }
 
   removeFromFavorite() {
-    const action = FavoritesActions.removeFavorite({
-      id: this.movie().id,
-    });
-
-    this.movie().favorited = false;
-
-    this.store.dispatch(action);
+    this.service.removeFromFavorite(this.movie);
+    this.movie = Object.assign({}, { ...this.movie, favorited: false });
   }
 }

@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { ApiService, IResponse } from '@cs/api.service';
+import * as FavoritesActions from '@ct/favorites/favorites.actions';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { ApiService, IResponse } from '../../core/services/api.service';
 
 export interface IMovie {
   adult: boolean;
@@ -51,6 +53,8 @@ export interface ICast {
   providedIn: 'root',
 })
 export class MovieService extends ApiService {
+  private readonly store = inject(Store);
+
   getGenres(): Observable<{ genres: IGenre[] }> {
     return this.http.get<{ genres: IGenre[] }>(
       `${this.baseUrl}/genre/movie/list`,
@@ -107,5 +111,25 @@ export class MovieService extends ApiService {
         headers: this.headers,
       }
     );
+  }
+
+  addToFavorite(movie: IMovie) {
+    const action = FavoritesActions.addFavorite({
+      favorite: movie,
+    });
+
+    // movie.favorited = true;
+
+    this.store.dispatch(action);
+  }
+
+  removeFromFavorite(movie: IMovie) {
+    const action = FavoritesActions.removeFavorite({
+      id: movie.id,
+    });
+
+    // movie.favorited = false;
+
+    this.store.dispatch(action);
   }
 }

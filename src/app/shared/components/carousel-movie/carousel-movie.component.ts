@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import * as FavoritesActions from '@ct/favorites/favorites.actions';
-import { FavoritesEntity } from '@ct/favorites/favorites.models';
 import {
+  lucideBookmarkMinus,
   lucideBookmarkPlus,
-  lucideBookMinus,
   lucideStar,
 } from '@ng-icons/lucide';
 import { Store } from '@ngrx/store';
@@ -21,6 +20,7 @@ import {
 } from '@sc/ui/ui-typography-helm/src';
 import { EmblaOptionsType, EmblaPluginType } from 'embla-carousel-angular';
 import Autoplay from 'embla-carousel-autoplay';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-carousel-movie',
@@ -44,34 +44,44 @@ import Autoplay from 'embla-carousel-autoplay';
     HlmPDirective,
   ],
   providers: [
-    provideIcons({ lucideStar, lucideBookmarkPlus, lucideBookMinus }),
+    provideIcons({ lucideStar, lucideBookmarkPlus, lucideBookmarkMinus }),
   ],
 })
 export class CarouselMovieComponent {
   private readonly store = inject(Store);
 
-  movies = input.required<IMovie[]>();
+  _movies: IMovie[] = [];
+  @Input()
+  get movies() {
+    return this._movies;
+  }
+
+  set movies(val: IMovie[]) {
+    if (val !== this.movies) {
+      this._movies = cloneDeep(val);
+    }
+  }
 
   carouselOptions: EmblaOptionsType = {
     loop: true,
     containScroll: false,
   };
   carouselPlugins: EmblaPluginType[] = [
-    Autoplay({ playOnInit: true, delay: 7000 }),
+    Autoplay({ playOnInit: true, delay: 5000 }),
   ];
 
   addToFavorite(movie: IMovie) {
-    const createFavoritesEntity = (movie: IMovie): FavoritesEntity => ({
-      id: movie.id,
-      type: 'movie',
-      created_at: new Date().getTime().toString(),
-    });
-
     const action = FavoritesActions.addFavorite({
-      favorite: createFavoritesEntity(movie),
+      favorite: movie,
     });
 
-    movie.favorited = true;
+    this.movies = this.movies.map((val) => {
+      if (val.id === movie.id) {
+        val = Object.assign({}, { ...movie, favorited: true });
+      }
+
+      return val;
+    });
 
     this.store.dispatch(action);
   }
@@ -81,7 +91,13 @@ export class CarouselMovieComponent {
       id: movie.id,
     });
 
-    movie.favorited = false;
+    this.movies = this.movies.map((val) => {
+      if (val.id === movie.id) {
+        val = Object.assign({}, { ...movie, favorited: false });
+      }
+
+      return val;
+    });
 
     this.store.dispatch(action);
   }

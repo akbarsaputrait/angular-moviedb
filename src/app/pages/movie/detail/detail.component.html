@@ -1,149 +1,171 @@
 @if (!movie) {
-  <p class="text-center">Loading...</p>
+<p class="text-center">Loading...</p>
 } @else {
-  <div class="flex flex-col gap-12 w-full container pb-6">
-    <section class="flex flex-col gap-8 relative">
-      <div class="w-full h-full lg:h-[400px] bg-white px-4 py-32 lg:flex rounded-lg relative bg-cover bg-top bg-no-repeat z-10"
-      [ngStyle]="{ 'background-image': 'url(&quot;' + 'https://image.tmdb.org/t/p/original'+ movie.backdrop_path + '&quot;)' }">
-        <div class="absolute inset-0 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent rounded-b-lg"></div>
-      </div>
-  
-      <div class="flex flex-col md:flex-row md:items-center -mt-40 mx-20 z-20 gap-8">
-        <img
-          [alt]="movie.title"
-          [src]="'https://image.tmdb.org/t/p/original' + movie.poster_path"
-          class="w-full max-w-[300px] rounded-md object-cover shadow-xl"
-        />
-  
-        <div class="flex flex-col items-start gap-3">
-          <p class="text-xs text-zinc-500 dark:text-zinc-300">
-            {{ movie.release_date | date : 'mediumDate' }}
-          </p>
-          <h2 hlmH2 class="text-wrap text-4xl font-semibold">{{ movie.title }}</h2>
+<div class="flex flex-col gap-12 w-full container pb-6">
+  <section class="flex flex-col gap-8 relative">
+    <div
+      class="w-full h-full lg:h-[400px] bg-white px-4 py-32 lg:flex rounded-lg relative bg-cover bg-top bg-no-repeat z-10"
+      [ngStyle]="{
+        'background-image':
+          'url(&quot;' +
+          'https://image.tmdb.org/t/p/original' +
+          movie.backdrop_path +
+          '&quot;)'
+      }"
+    >
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-zinc-50 dark:from-zinc-950 to-transparent rounded-b-lg"
+      ></div>
+    </div>
 
-          <p hmlP>
-            {{ movie.overview }}
-          </p>
+    <div
+      class="flex flex-col md:flex-row md:items-center -mt-40 mx-20 z-20 gap-8"
+    >
+      <img
+        [alt]="movie.title"
+        [src]="'https://image.tmdb.org/t/p/original' + movie.poster_path"
+        class="w-full max-w-[300px] rounded-md object-cover shadow-xl"
+      />
 
-          @if (movie.genres.length > 0) {
-            <div class="flex flex-row gap-2 flex-wrap mt-3">
-              @for (genre of movie.genres; track $index) {
-              <div hlmBadge variant="secondary">{{ genre.name }}</div>
-              }
-            </div>
-            }
+      <div class="flex flex-col items-start gap-3">
+        <p class="text-xs text-zinc-500 dark:text-zinc-300">
+          {{ movie.release_date | date : 'mediumDate' }}
+        </p>
+        <h2 hlmH2 class="text-wrap text-4xl font-semibold">
+          {{ movie.title }}
+        </h2>
 
-            <div class="mt-4 flex items-center gap-8 text-xs">
-              <div
-                class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2"
-              >
-                <hlm-icon
-                  name="lucideStar"
-                  size="sm"
-                  class="text-yellow-500"
-                ></hlm-icon>
-    
-                <div class="mt-1.5 sm:mt-0">
-                  <p class="text-zinc-500 dark:text-zinc-300">Vote</p>
-    
-                  <p class="font-medium">
-                    {{ movie.vote_average | number : '1.0-1' }}
-                  </p>
-                </div>
-              </div>
-    
-              <div
-                class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2"
-              >
-                @if (!movie.favorited) {
-                <button
-                  hlmBtn
-                  size="sm"
-                  variant="outline"
-                  (click)="addToFavorite(movie)"
-                >
-                  <hlm-icon
-                    name="lucideBookmarkPlus"
-                    class="mr-2"
-                    size="sm"
-                  ></hlm-icon>
-                  Add to Favorite
-                </button>
-                } @else {
-                <button
-                  hlmBtn
-                  size="sm"
-                  variant="destructive"
-                  (click)="removeFromFavorite(movie)"
-                >
-                  <hlm-icon
-                    name="lucideBookMinus"
-                    class="mr-2"
-                    size="sm"
-                  ></hlm-icon>
-                  Remove
-                </button>
-                }
-              </div>
-            </div>
+        <p hmlP>
+          {{ movie.overview }}
+        </p>
 
-            @if (movie.production_companies && movie.production_companies.length > 0) {
-              <div class="flex flex-row gap-6 mt-3 items-center">
-                @for (company of movie.production_companies; track $index) {
-                  @if (company.logo_path) {
-                    <img
-                    [alt]="company.name"
-                    [title]="company.name"
-                    [src]="'https://image.tmdb.org/t/p/w92' + company.logo_path"
-                    class="w-[92px] h-full"
-                  />
-                  }
-                }
-              </div>
-            }
-        </div>
-      </div>
-    </section>
-
-    @if (casts.length > 0) {
-      <section class="flex flex-col gap-6 w-full">
-        <h3 hlmH3>Casts</h3>
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
-        >
-          @for (cast of casts; track $index) {
-            <div hlmCard class="flex flex-col h-full group">
-              <div hlmCardHeader>
-                <img
-                  alt=""
-                  [src]="cast.profile_path ? 'https://image.tmdb.org/t/p/w300' + cast.profile_path : '/assets/images/people-thumb.jpg'"
-                  class="w-full max-w-[300px] h-[450px] rounded-md object-cover group-hover:shadow-xl"
-                />
-              </div>
-            
-              <div hlmCardContent>
-                <p class="text-xs text-zinc-500 dark:text-zinc-300 mt-3">
-                  {{ cast.character }}
-                </p>
-                <a class="font-semibold text-lg text-wrap hover:text-primary transition-colors duration-200 group-hover:text-primary">{{ cast.name }}</a>
-              </div>
-            </div>
+        @if (movie.genres.length > 0) {
+        <div class="flex flex-row gap-2 flex-wrap mt-3">
+          @for (genre of movie.genres; track $index) {
+          <div hlmBadge variant="secondary">{{ genre.name }}</div>
           }
         </div>
-      </section>
-    }
+        }
 
-    <section class="flex flex-col gap-6 w-full">
-      @if (!loading.similar) { <h3 hlmH3>Similar Movies</h3> }
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
-      >
-        @if (loading.similar) { @for (item of [1,2,3,4]; track $index) {
-        <app-card-movie-skeleton></app-card-movie-skeleton>
-        } } @else { @for (movie of similar; track $index) {
-        <app-card-movie [movie]="movie"></app-card-movie>
-        } }
+        <div class="mt-4 flex items-center gap-8 text-xs">
+          <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+            <hlm-icon
+              name="lucideStar"
+              size="sm"
+              class="text-yellow-500"
+            ></hlm-icon>
+
+            <div class="mt-1.5 sm:mt-0">
+              <p class="text-zinc-500 dark:text-zinc-300">Vote</p>
+
+              <p class="font-medium">
+                {{ movie.vote_average | number : '1.0-1' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
+            @if (!movie.favorited) {
+            <button
+              hlmBtn
+              size="sm"
+              variant="outline"
+              (click)="addToFavorite()"
+            >
+              <hlm-icon
+                name="lucideBookmarkPlus"
+                class="mr-2"
+                size="sm"
+              ></hlm-icon>
+              Add to Favorite
+            </button>
+            } @else {
+            <button
+              hlmBtn
+              size="sm"
+              variant="destructive"
+              (click)="removeFromFavorite()"
+            >
+              <hlm-icon
+                name="lucideBookmarkMinus"
+                class="mr-2"
+                size="sm"
+              ></hlm-icon>
+              Remove
+            </button>
+            }
+          </div>
+        </div>
+
+        @if (movie.production_companies && movie.production_companies.length >
+        0) {
+        <div class="flex flex-row gap-6 mt-3 items-center">
+          @for (company of movie.production_companies; track $index) { @if
+          (company.logo_path) {
+          <img
+            [alt]="company.name"
+            [title]="company.name"
+            [src]="'https://image.tmdb.org/t/p/w92' + company.logo_path"
+            class="w-[92px] h-full"
+          />
+          } }
+        </div>
+        }
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+
+  @if (casts.length > 0) {
+  <section class="flex flex-col gap-6 w-full">
+    <h3 hlmH3>Casts</h3>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+    >
+      @for (cast of casts; track $index) {
+      <div hlmCard class="flex flex-col h-full group">
+        <div hlmCardHeader>
+          <img
+            alt=""
+            [src]="
+              cast.profile_path
+                ? 'https://image.tmdb.org/t/p/w300' + cast.profile_path
+                : '/assets/images/people-thumb.jpg'
+            "
+            class="w-full max-w-[300px] h-[450px] rounded-md object-cover group-hover:shadow-xl"
+          />
+        </div>
+
+        <div hlmCardContent>
+          <p class="text-xs text-zinc-500 dark:text-zinc-300 mt-3">
+            {{ cast.character }}
+          </p>
+          <a
+            class="font-semibold text-lg text-wrap hover:text-primary transition-colors duration-200 group-hover:text-primary"
+          >
+            {{ cast.name }}
+          </a>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+  } @if (!loading.similar) {
+  <section class="flex flex-col gap-6 w-full">
+    <h3 hlmH3>Similar Movies</h3>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+      [class.!grid-cols-1]="similar.length === 0"
+    >
+      @if (loading.similar) { @for (item of [1,2,3,4]; track $index) {
+      <app-card-movie-skeleton></app-card-movie-skeleton>
+      } } @else { @if (similar.length > 0) { @for (movie of similar; track
+      $index) {
+      <app-card-movie [movie]="movie"></app-card-movie>
+      } } @else {
+      <p class="text-center">There's no similar movie</p>
+      } }
+    </div>
+  </section>
+  }
+</div>
 }

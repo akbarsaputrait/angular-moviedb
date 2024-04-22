@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
+import { selectAllGenres } from '@ct/genres/genres.selectors';
 import { Store } from '@ngrx/store';
 import { CardMovieSkeletonComponent } from '@sc/card-movie-skeleton/card-movie-skeleton.component';
 import { CardMovieComponent } from '@sc/card-movie/card-movie.component';
@@ -19,7 +26,6 @@ import { IGenre, IMovie, MovieService } from '../movie.service';
     CardMovieComponent,
     CardMovieSkeletonComponent,
     CarouselMovieComponent,
-
     HlmSkeletonComponent,
   ],
   templateUrl: './index.component.html',
@@ -29,12 +35,15 @@ export class MovieIndexComponent implements OnInit {
   private readonly service = inject(MovieService);
   private readonly store = inject(Store);
 
-  favoriteIds: number[] = [];
+  favoriteIds: WritableSignal<number[]> = signal([]);
+
+  nowPlayings: WritableSignal<IMovie[]> = signal([]);
+  upcomings: WritableSignal<IMovie[]> = signal([]);
+  discovers: WritableSignal<IMovie[]> = signal([]);
+
+  limit = 8;
 
   genres: IGenre[] = [];
-  discovers: IMovie[] = [];
-  nowPlayings: IMovie[] = [];
-  upcomings: IMovie[] = [];
 
   loading = {
     discovers: true,
@@ -44,11 +53,11 @@ export class MovieIndexComponent implements OnInit {
 
   constructor() {
     this.store.select(selectAllFavoriteIds).subscribe((val) => {
-      this.favoriteIds = val;
+      this.favoriteIds.set(val);
     });
 
-    this.service.getGenres().subscribe((data) => {
-      this.genres = data.genres;
+    this.store.select(selectAllGenres).subscribe((val) => {
+      this.genres = val;
     });
   }
 
@@ -57,14 +66,16 @@ export class MovieIndexComponent implements OnInit {
       .getDiscovers()
       .pipe(delay(1000))
       .subscribe((data) => {
-        this.discovers = data.results.slice(0, 4).map((val) => {
-          val.genres = this.genres.filter((genre) =>
-            val.genre_ids.includes(genre.id)
-          );
-          val.favorited = this.favoriteIds.includes(val.id);
+        this.discovers.set(
+          data.results.slice(0, this.limit).map((val) => {
+            val.genres = this.genres.filter((genre) =>
+              val.genre_ids.includes(genre.id)
+            );
+            val.favorited = this.favoriteIds().includes(val.id);
 
-          return val;
-        });
+            return val;
+          })
+        );
 
         this.loading.discovers = false;
       });
@@ -73,16 +84,17 @@ export class MovieIndexComponent implements OnInit {
       .getNowPlayings()
       .pipe(delay(1000))
       .subscribe((data) => {
-        console.log(this.favoriteIds);
-        this.nowPlayings = data.results.slice(0, 4).map((val) => {
-          val.genres = this.genres.filter((genre) =>
-            val.genre_ids.includes(genre.id)
-          );
+        this.nowPlayings.set(
+          data.results.slice(0, this.limit).map((val) => {
+            val.genres = this.genres.filter((genre) =>
+              val.genre_ids.includes(genre.id)
+            );
 
-          val.favorited = this.favoriteIds.includes(val.id);
+            val.favorited = this.favoriteIds().includes(val.id);
 
-          return val;
-        });
+            return val;
+          })
+        );
 
         this.loading.nowPlayings = false;
       });
@@ -91,14 +103,16 @@ export class MovieIndexComponent implements OnInit {
       .getUpcomings()
       .pipe(delay(1000))
       .subscribe((data) => {
-        this.upcomings = data.results.slice(0, 4).map((val) => {
-          val.genres = this.genres.filter((genre) =>
-            val.genre_ids.includes(genre.id)
-          );
-          val.favorited = this.favoriteIds.includes(val.id);
+        this.upcomings.set(
+          data.results.slice(0, this.limit).map((val) => {
+            val.genres = this.genres.filter((genre) =>
+              val.genre_ids.includes(genre.id)
+            );
+            val.favorited = this.favoriteIds().includes(val.id);
 
-          return val;
-        });
+            return val;
+          })
+        );
 
         this.loading.upcomings = false;
       });

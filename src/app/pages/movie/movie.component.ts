@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import * as GenresActions from '@ct/genres/genres.actions';
+import { Store } from '@ngrx/store';
+import { MovieService } from './movie.service';
 
 @Component({
   selector: 'app-movie',
@@ -8,4 +11,15 @@ import { RouterModule } from '@angular/router';
   styleUrl: './movie.component.scss',
   imports: [RouterModule],
 })
-export class MovieComponent {}
+export class MovieComponent {
+  private readonly store = inject(Store);
+  private readonly service = inject(MovieService);
+
+  constructor() {
+    this.service.getGenres().subscribe((val) => {
+      this.store.dispatch(
+        GenresActions.loadGenresSuccess({ genres: val.genres })
+      );
+    });
+  }
+}

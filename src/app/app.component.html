@@ -16,18 +16,9 @@
 
         <button
           hlmBtn
-          variant="ghost"
-          size="default"
-          [routerLink]="['tv-shows']"
-          routerLinkActive="active-link"
-        >
-          TV Shows
-        </button>
-
-        <button
-          hlmBtn
           variant="default"
           size="default"
+          [routerLink]="['favorites']"
           [disabled]="(favorites$ | async)?.length === 0"
         >
           <hlm-icon name="lucideBookmark" class="mr-2" size="sm"></hlm-icon>

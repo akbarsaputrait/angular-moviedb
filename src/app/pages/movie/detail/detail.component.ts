@@ -3,17 +3,21 @@ import {
   Component,
   effect,
   inject,
-  input,
-  InputSignal,
+  Input,
   OnInit,
+  signal,
+  WritableSignal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
+import { selectAllGenres } from '@ct/genres/genres.selectors';
 import { provideIcons } from '@ng-icons/core';
 import {
   lucideBookmarkMinus,
   lucideBookmarkPlus,
   lucideStar,
 } from '@ng-icons/lucide';
+import { Store } from '@ngrx/store';
 import { CardMovieSkeletonComponent } from '@sc/card-movie-skeleton/card-movie-skeleton.component';
 import { CardMovieComponent } from '@sc/card-movie/card-movie.component';
 import { HlmBadgeDirective } from '@sc/ui/ui-badge-helm/src';
@@ -28,11 +32,14 @@ import { ICast, IGenre, IMovie, MovieService } from '../movie.service';
   standalone: true,
   imports: [
     CommonModule,
+
     AsyncPipe,
+
     HlmBadgeDirective,
     HlmPDirective,
-    HlmIconComponent,
     HlmButtonDirective,
+
+    HlmIconComponent,
     CardMovieSkeletonComponent,
     CardMovieComponent,
   ],
@@ -45,48 +52,70 @@ import { ICast, IGenre, IMovie, MovieService } from '../movie.service';
 export class MovieDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(MovieService);
+  private readonly store = inject(Store);
 
-  movieId: InputSignal<string> = input.required<string>();
-  movie: IMovie | undefined;
+  movieId: WritableSignal<string> = signal<string>('');
+
+  _movie: IMovie | null = null;
+  @Input()
+  get movie() {
+    return this._movie;
+  }
+
+  set movie(val: IMovie | null) {
+    if (val !== this.movie) {
+      this._movie = Object.assign({}, val);
+    }
+  }
 
   casts: ICast[] = [];
 
   genres: IGenre[] = [];
   similar: IMovie[] = [];
 
+  favoriteIds: number[] = [];
+
   loading = {
     similar: true,
   };
 
   constructor() {
-    this.service.getGenres().subscribe((data) => {
-      this.genres = data.genres;
+    this.store.select(selectAllGenres).subscribe((val) => {
+      this.genres = val;
+    });
+
+    this.store.select(selectAllFavoriteIds).subscribe((val) => {
+      this.favoriteIds = val;
     });
 
     effect(() => {
       this.service
-        .getMovie(this.movieId.toString())
+        .getMovie(this.movieId())
         .pipe(delay(1000))
         .subscribe((movie) => {
           this.movie = movie;
+
+          if (this.favoriteIds.includes(Number(movie.id))) {
+            this.movie.favorited = true;
+          }
         });
 
       this.service
-        .getMovieCredits(this.movieId.toString())
+        .getMovieCredits(this.movieId())
         .pipe(delay(1000))
         .subscribe((val) => {
           this.casts = val.cast.slice(0, 8);
         });
 
       this.service
-        .getSimilar(this.movieId.toString())
+        .getSimilar(this.movieId())
         .pipe(delay(1000))
         .subscribe((val) => {
           this.similar = val.results.slice(0, 4).map((val) => {
             val.genres = this.genres.filter((genre) =>
               val.genre_ids.includes(genre.id)
             );
-            // val.favorited = this.favoriteIds.includes(val.id);
+            val.favorited = this.favoriteIds.includes(val.id);
 
             return val;
           });
@@ -98,15 +127,22 @@ export class MovieDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      this.movieId = params['movie_id'];
+      this.movieId.set(params['movie_id']);
+      this.movie = null;
     });
   }
 
-  addToFavorite(movie: IMovie) {
-    return movie;
+  addToFavorite() {
+    if (this.movie) {
+      this.movie = Object.assign({}, { ...this.movie, favorited: true });
+      this.service.addToFavorite(this.movie);
+    }
   }
 
-  removeFromFavorite(movie: IMovie) {
-    return movie;
+  removeFromFavorite() {
+    if (this.movie) {
+      this.movie = Object.assign({}, { ...this.movie, favorited: false });
+      this.service.removeFromFavorite(this.movie);
+    }
   }
 }
