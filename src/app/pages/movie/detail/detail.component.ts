@@ -1,6 +1,8 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
+  DestroyRef,
   effect,
   inject,
   Input,
@@ -10,7 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
 import { selectAllGenres } from '@ct/genres/genres.selectors';
 import { provideIcons } from '@ng-icons/core';
@@ -26,7 +28,7 @@ import { HlmBadgeDirective } from '@sc/ui/ui-badge-helm/src';
 import { HlmButtonDirective } from '@sc/ui/ui-button-helm/src';
 import { HlmIconComponent } from '@sc/ui/ui-icon-helm/src';
 import { HlmPDirective } from '@sc/ui/ui-typography-helm/src';
-import { delay } from 'rxjs';
+import { catchError, Subject, takeUntil } from 'rxjs';
 import { ICast, IGenre, IMovie, MovieService } from '../movie.service';
 
 @Component({
@@ -53,10 +55,13 @@ import { ICast, IGenre, IMovie, MovieService } from '../movie.service';
 })
 export class MovieDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly service = inject(MovieService);
   private readonly store = inject(Store);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+
+  destroyRef = inject(DestroyRef);
 
   movieId: WritableSignal<string> = signal<string>('');
 
@@ -100,10 +105,18 @@ export class MovieDetailComponent implements OnInit {
         this.favoriteIds = val;
       });
 
+    const destroyed = new Subject<any>();
+
     effect(() => {
       this.service
         .getMovie(this.movieId())
-        .pipe(delay(1000))
+        .pipe(
+          takeUntil(destroyed),
+          catchError((err) => {
+            this.catchError(err);
+            throw err;
+          })
+        )
         .subscribe((movie) => {
           this.movie = movie;
           this.title.setTitle(`${this.movie.title} - Angular Moviedb`);
@@ -122,14 +135,24 @@ export class MovieDetailComponent implements OnInit {
 
       this.service
         .getMovieCredits(this.movieId())
-        .pipe(delay(1000))
+        .pipe(
+          takeUntil(destroyed),
+          catchError((err) => {
+            throw err;
+          })
+        )
         .subscribe((val) => {
           this.casts = val.cast.slice(0, 8);
         });
 
       this.service
         .getSimilar(this.movieId())
-        .pipe(delay(1000))
+        .pipe(
+          takeUntil(destroyed),
+          catchError((err) => {
+            throw err;
+          })
+        )
         .subscribe((val) => {
           this.similar = val.results.slice(0, 4).map((val) => {
             val.genres = this.genres.filter((genre) =>
@@ -142,6 +165,11 @@ export class MovieDetailComponent implements OnInit {
 
           this.loading.similar = false;
         });
+    });
+
+    this.destroyRef.onDestroy(() => {
+      destroyed.next(null);
+      destroyed.complete();
     });
   }
 
@@ -165,6 +193,12 @@ export class MovieDetailComponent implements OnInit {
     if (this.movie) {
       this.movie = Object.assign({}, { ...this.movie, favorited: false });
       this.service.removeFromFavorite(this.movie);
+    }
+  }
+
+  catchError(err: HttpErrorResponse) {
+    if (err.status === 404) {
+      this.router.navigate(['/not-found']);
     }
   }
 }
