@@ -76,7 +76,7 @@ export class MovieIndexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const destroyed = new Subject();
+    const destroyed = new Subject<void>();
 
     this.title.setTitle(this.siteTitle);
     this.meta.updateTag({ name: 'title', content: this.siteTitle });
@@ -137,7 +137,7 @@ export class MovieIndexComponent implements OnInit {
       });
 
     this.destroyRef.onDestroy(() => {
-      destroyed.next(null);
+      destroyed.next();
       destroyed.complete();
     });
   }

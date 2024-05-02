@@ -105,7 +105,7 @@ export class MovieDetailComponent implements OnInit {
         this.favoriteIds = val;
       });
 
-    const destroyed = new Subject<any>();
+    const destroyed = new Subject<void>();
 
     effect(() => {
       this.service
@@ -168,7 +168,7 @@ export class MovieDetailComponent implements OnInit {
     });
 
     this.destroyRef.onDestroy(() => {
-      destroyed.next(null);
+      destroyed.next();
       destroyed.complete();
     });
   }
