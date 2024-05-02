@@ -8,6 +8,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
@@ -85,13 +86,19 @@ export class MovieDetailComponent implements OnInit {
   };
 
   constructor() {
-    this.store.select(selectAllGenres).subscribe((val) => {
-      this.genres = val;
-    });
+    this.store
+      .select(selectAllGenres)
+      .pipe(takeUntilDestroyed())
+      .subscribe((val) => {
+        this.genres = val;
+      });
 
-    this.store.select(selectAllFavoriteIds).subscribe((val) => {
-      this.favoriteIds = val;
-    });
+    this.store
+      .select(selectAllFavoriteIds)
+      .pipe(takeUntilDestroyed())
+      .subscribe((val) => {
+        this.favoriteIds = val;
+      });
 
     effect(() => {
       this.service

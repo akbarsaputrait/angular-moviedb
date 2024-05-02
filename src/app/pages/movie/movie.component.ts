@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import * as GenresActions from '@ct/genres/genres.actions';
 import { Store } from '@ngrx/store';
@@ -16,10 +17,13 @@ export class MovieComponent {
   private readonly service = inject(MovieService);
 
   constructor() {
-    this.service.getGenres().subscribe((val) => {
-      this.store.dispatch(
-        GenresActions.loadGenresSuccess({ genres: val.genres })
-      );
-    });
+    this.service
+      .getGenres()
+      .pipe(takeUntilDestroyed())
+      .subscribe((val) => {
+        this.store.dispatch(
+          GenresActions.loadGenresSuccess({ genres: val.genres })
+        );
+      });
   }
 }

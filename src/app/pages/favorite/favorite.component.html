@@ -4,9 +4,9 @@
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
     >
-      @if ((favorites$ | async)?.length === 0) {
+      @if (favorites().length === 0) {
       <p class="text-center">You have no favorites yet.</p>
-      } @else { @for (movie of (favorites$ | async); track $index) {
+      } @else { @for (movie of favorites(); track $index) {
       <app-card-movie [movie]="movie"></app-card-movie>
       } }
     </div>

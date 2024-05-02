@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  DestroyRef,
   inject,
   OnInit,
   signal,
   WritableSignal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { selectAllFavoriteIds } from '@ct/favorites/favorites.selectors';
 import { selectAllGenres } from '@ct/genres/genres.selectors';
@@ -14,7 +16,7 @@ import { CardMovieSkeletonComponent } from '@sc/card-movie-skeleton/card-movie-s
 import { CardMovieComponent } from '@sc/card-movie/card-movie.component';
 import { CarouselMovieComponent } from '@sc/carousel-movie/carousel-movie.component';
 import { HlmSkeletonComponent } from '@sc/ui/ui-skeleton-helm/src';
-import { delay } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { IGenre, IMovie, MovieService } from '../movie.service';
 
 @Component({
@@ -37,6 +39,7 @@ export class MovieIndexComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  destroyRef = inject(DestroyRef);
 
   siteTitle = 'Movies - Angular Moviedb';
 
@@ -57,22 +60,30 @@ export class MovieIndexComponent implements OnInit {
   };
 
   constructor() {
-    this.store.select(selectAllFavoriteIds).subscribe((val) => {
-      this.favoriteIds.set(val);
-    });
+    this.store
+      .select(selectAllFavoriteIds)
+      .pipe(takeUntilDestroyed())
+      .subscribe((val) => {
+        this.favoriteIds.set(val);
+      });
 
-    this.store.select(selectAllGenres).subscribe((val) => {
-      this.genres = val;
-    });
+    this.store
+      .select(selectAllGenres)
+      .pipe(takeUntilDestroyed())
+      .subscribe((val) => {
+        this.genres = val;
+      });
   }
 
   ngOnInit(): void {
+    const destroyed = new Subject();
+
     this.title.setTitle(this.siteTitle);
     this.meta.updateTag({ name: 'title', content: this.siteTitle });
 
     this.service
       .getDiscovers()
-      .pipe(delay(1000))
+      .pipe(takeUntil(destroyed))
       .subscribe((data) => {
         this.discovers.set(
           data.results.slice(0, this.limit).map((val) => {
@@ -90,7 +101,7 @@ export class MovieIndexComponent implements OnInit {
 
     this.service
       .getNowPlayings()
-      .pipe(delay(1000))
+      .pipe(takeUntil(destroyed))
       .subscribe((data) => {
         this.nowPlayings.set(
           data.results.slice(0, this.limit).map((val) => {
@@ -109,7 +120,7 @@ export class MovieIndexComponent implements OnInit {
 
     this.service
       .getUpcomings()
-      .pipe(delay(1000))
+      .pipe(takeUntil(destroyed))
       .subscribe((data) => {
         this.upcomings.set(
           data.results.slice(0, this.limit).map((val) => {
@@ -124,5 +135,10 @@ export class MovieIndexComponent implements OnInit {
 
         this.loading.upcomings = false;
       });
+
+    this.destroyRef.onDestroy(() => {
+      destroyed.next(null);
+      destroyed.complete();
+    });
   }
 }
